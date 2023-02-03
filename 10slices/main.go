@@ -8,7 +8,7 @@ import (
 func main() {
 	fmt.Println("Welcome to Slices")
 
-	//
+	// Initialize Slices
 	var fruitList = []string{"Apple", "Mango", "Orange"}
 
 	fmt.Println("FruitList ", fruitList)
@@ -27,7 +27,7 @@ func main() {
 	fruitList = append(fruitList[1:3])
 	fmt.Println("Slice Fruit List ", fruitList)
 
-	// Using make()
+	//::::::::::::::::::::::::::: Using make()
 
 	highScores := make([]int, 4) // Default Memory Allocation
 
@@ -39,7 +39,7 @@ func main() {
 	highScores = append(highScores, 999, 654, 777) // Reallocation of Memory [Append keyword]
 	fmt.Println(highScores)
 
-	// Sort
+	//  Sort
 
 	sort.Ints(highScores) // Sort the list in increasing order
 	fmt.Println(highScores)
