@@ -144,3 +144,26 @@ func updateOneCourse(w http.ResponseWriter, r *http.Request) {
 	}
 	//TODO: ID not found Senario
 }
+
+func deleteOneCourse(w http.ResponseWriter, r *http.Request) {
+	// Delete one course
+	fmt.Println("Delete one course")
+
+	// Setting Header
+	w.Header().Set("Content-Type", "application/json")
+
+	//Grab the request ID
+	params := mux.Vars(r)
+
+	// Loop ID through couses, Find macthing ID and Remove the Course and append new course with same ID.
+	for index, value := range courses {
+		if value.CourseId == params["id"] {
+
+			// Deleting previous course data by mathcing ID
+			courses = append(courses[:index], courses[index+1:]...)
+			json.NewEncoder(w).Encode("Course deleted successfully")
+			break
+		}
+	}
+	//TODO: ID not found Senario
+}
