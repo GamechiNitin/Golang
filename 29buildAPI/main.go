@@ -105,11 +105,42 @@ func createAllCourses(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate Unique Id
-	rand.Seed(time.Now().UnixNano()) 
+	rand.Seed(time.Now().UnixNano())
 	course.CourseId = strconv.Itoa(rand.Intn(100)) // Int to String
-	
+
 	// Append course into courses
 	courses = append(courses, course)
 	json.NewEncoder(w).Encode(course)
 
+}
+
+func updateOneCourse(w http.ResponseWriter, r *http.Request) {
+	// Update one Course
+	fmt.Println("Update one course")
+
+	// Setting Header
+	w.Header().Set("Content-Type", "application/json")
+
+	//Grab the request ID
+	params := mux.Vars(r)
+
+	// Loop ID through couses, Find macthing ID and Remove the Course and append new course with same ID.
+	for index, value := range courses {
+		if value.CourseId == params["id"] {
+
+			// Deleting previous course data by mathcing ID
+			courses = append(courses[:index], courses[index+1:]...)
+
+			// Request Json Decoding
+			var course Course
+			_ = json.NewDecoder(r.Body).Decode(&course)
+
+			// Updating...
+			course.CourseId = params["id"]
+			courses = append(courses, course)
+			json.NewEncoder(w).Encode(course)
+			return
+		}
+	}
+	//TODO: ID not found Senario
 }
