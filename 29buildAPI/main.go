@@ -17,10 +17,36 @@ func main() {
 
 	// Controller Routing - Mux
 	r := mux.NewRouter()
+
+	// Data Seeding
+	courses = append(courses, Course{
+		CourseId:    "3",
+		CourseName:  "Flutter",
+		CoursePrice: 3999,
+		Author: &Author{
+			FullName: "Google.com",
+			Website:  "Flutter.dev",
+		},
+	})
+	courses = append(courses, Course{
+		CourseId:    "6",
+		CourseName:  "Golang",
+		CoursePrice: 999,
+		Author: &Author{
+			FullName: "Golang team",
+			Website:  "go.dev",
+		},
+	})
+
+	// Routing or Navigation
 	r.HandleFunc("/", serveHome).Methods("GET")
+	r.HandleFunc("/courses", getAllCourses).Methods("GET")
+	r.HandleFunc("/course/{id}", getOneCourse).Methods("GET")
+	r.HandleFunc("/course", createCourse).Methods("POST")
+	r.HandleFunc("/course/{id}", updateOneCourse).Methods("PUT")
+	r.HandleFunc("/course/{id}", deleteOneCourse).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":4000", r))
-
 }
 
 // Model for course - file
@@ -81,15 +107,12 @@ func getOneCourse(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func createAllCourses(w http.ResponseWriter, r *http.Request) {
+func createCourse(w http.ResponseWriter, r *http.Request) {
 	// Create one Course
 	fmt.Println("Create one course")
 
 	// Setting Header
 	w.Header().Set("Content-Type", "application/json")
-
-	// Encoding json
-	json.NewEncoder(w).Encode(courses)
 
 	// What if: body is Empty
 	if r.Body == nil {
@@ -100,8 +123,17 @@ func createAllCourses(w http.ResponseWriter, r *http.Request) {
 	var course Course
 	_ = json.NewDecoder(r.Body).Decode(&course)
 	if course.IsEmpty() {
-		json.NewEncoder(w).Encode("No data in JSON")
+		json.NewEncoder(w).Encode("Provide a valid course name")
 		return
+	}
+
+	// Check Duplicate Course Title
+
+	for _, values := range courses {
+		if values.CourseName == course.CourseName {
+			json.NewEncoder(w).Encode("Course with same name already exit!")
+			return
+		}
 	}
 
 	// Generate Unique Id
