@@ -59,13 +59,35 @@ func updateOneMovie(movieId string) {
 
 	// Filter the mongodb database base on ID
 	filter := bson.M{"_id": id}
-	
+
 	// Updating DB value
 	update := bson.M{"$set": bson.M{"watched": true}}
-	
+
 	result, err := collection.UpdateOne(context.Background(), filter, update)
 	checkNilError(err)
 	fmt.Println("Modified count: ", result.ModifiedCount)
+}
+
+// Delete 1 record
+func deleteOneMovie(movieId string) {
+	id, err := primitive.ObjectIDFromHex(movieId)
+	checkNilError(err)
+
+	// Filter the mongodb database base on ID
+	filter := bson.M{"_id": id}
+
+	// Delete one record
+	result, err := collection.DeleteOne(context.Background(), filter)
+	checkNilError(err)
+	fmt.Println("Delete count: ", result)
+}
+
+// Delete all record
+func deleteAllMovie() {
+	// Delete All record
+	result, err := collection.DeleteMany(context.Background(), bson.D{{}}, nil) // Delete Many Filter
+	checkNilError(err)
+	fmt.Println("Delete many count: ", result.DeletedCount) // result : key, values
 }
 
 func checkNilError(err error) {
