@@ -6,6 +6,8 @@ import (
 	"log"
 	"mongoapi/model"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -39,7 +41,7 @@ func init() {
 
 // Mongo-DB Helpers - File
 // Insert 1 record
-func insertOneMoview(movie model.Netflix) {
+func insertOneMovie(movie model.Netflix) {
 
 	inserted, err := collection.InsertOne(context.TODO(), movie)
 
@@ -48,4 +50,26 @@ func insertOneMoview(movie model.Netflix) {
 	}
 
 	fmt.Println("Inserted one data in Database with ID: ", inserted.InsertedID)
+}
+
+// Update 1 record
+func updateOneMovie(movieId string) {
+	id, err := primitive.ObjectIDFromHex(movieId)
+	checkNilError(err)
+
+	// Filter the mongodb database base on ID
+	filter := bson.M{"_id": id}
+	
+	// Updating DB value
+	update := bson.M{"$set": bson.M{"watched": true}}
+	
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	checkNilError(err)
+	fmt.Println("Modified count: ", result.ModifiedCount)
+}
+
+func checkNilError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
