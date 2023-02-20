@@ -90,6 +90,25 @@ func deleteAllMovie() {
 	fmt.Println("Delete many count: ", result.DeletedCount) // result : key, values
 }
 
+// GET ALL Movies with primitive return type
+func getAllMovies() []primitive.M {
+	cursor, err := collection.Find(context.Background(), bson.D{{}})
+	checkNilError(err)
+
+	var movies []primitive.M
+	for cursor.Next(context.Background()) {
+		var movie bson.M
+		err := cursor.Decode(&movie)
+		checkNilError(err)
+
+		// If No error Add data to movies
+		movies = append(movies, movie)
+	}
+	// Always Close Cursor context
+	defer cursor.Close(context.Background())
+	return movies
+}
+
 func checkNilError(err error) {
 	if err != nil {
 		log.Fatal(err)
