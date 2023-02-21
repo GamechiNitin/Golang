@@ -8,6 +8,7 @@ import (
 	"mongoapi/model"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -139,6 +140,16 @@ func CreateMovies(w http.ResponseWriter, r *http.Request) {
 
 	// Response 
 	json.NewEncoder(w).Encode(movie)
+}
+
+// Marked movie has watched - Controller
+func MarkedAsWatched(w http.ResponseWriter, r *http.Request)  {
+	w.Header().Set("Content-Type", "Application/x-www-form-urlencode")
+	w.Header().Set("Allow-Control-Allow-Methods","POST")
+
+	params := mux.Vars(r)
+	updateOneMovie(params["id"])
+	json.NewEncoder(w).Encode(params["id"])
 }
 
 func checkNilError(err error) {
