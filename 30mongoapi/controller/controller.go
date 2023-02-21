@@ -86,11 +86,12 @@ func deleteOneMovie(movieId string) {
 }
 
 // Delete all record
-func deleteAllMovie() {
+func deleteAllMovie() int64 {
 	// Delete All record
 	result, err := collection.DeleteMany(context.Background(), bson.D{{}}, nil) // Delete Many Filter
 	checkNilError(err)
 	fmt.Println("Delete many count: ", result.DeletedCount) // result : key, values
+	return result.DeletedCount
 }
 
 // GET ALL Movies with primitive return type
@@ -125,7 +126,7 @@ func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
 
 // Create Movie Controller - File
 func CreateMovies(w http.ResponseWriter, r *http.Request) {
-	
+
 	// Different Header
 	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
 	w.Header().Set("Allow-Control-Allow-Methods", "POST")
@@ -138,18 +139,37 @@ func CreateMovies(w http.ResponseWriter, r *http.Request) {
 	// Add to Database
 	insertOneMovie(movie)
 
-	// Response 
+	// Response
 	json.NewEncoder(w).Encode(movie)
 }
 
 // Marked movie has watched - Controller
-func MarkedAsWatched(w http.ResponseWriter, r *http.Request)  {
+func MarkedAsWatched(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "Application/x-www-form-urlencode")
-	w.Header().Set("Allow-Control-Allow-Methods","POST")
+	w.Header().Set("Allow-Control-Allow-Methods", "PUT")
 
 	params := mux.Vars(r)
 	updateOneMovie(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
+}
+
+// Delete one movie - Controller
+func DeleteAMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/x-www-form-urlencode")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
+
+	params := mux.Vars(r)
+	deleteOneMovie(params["id"])
+	json.NewEncoder(w).Encode(params["id"])
+}
+
+// Delete all movie - Controller
+func DeleteAllMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/x-www-form-urlencode")
+	w.Header().Set("Allow-Control-Allow-Methods", "DELETE")
+
+	count := deleteAllMovie()
+	json.NewEncoder(w).Encode(count)
 }
 
 func checkNilError(err error) {
