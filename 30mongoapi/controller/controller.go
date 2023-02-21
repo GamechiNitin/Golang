@@ -122,6 +122,25 @@ func GetMyAllMovies(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(allMovies)
 }
 
+// Create Movie Controller - File
+func CreateMovies(w http.ResponseWriter, r *http.Request) {
+	
+	// Different Header
+	w.Header().Set("Content-Type", "application/x-www-form-urlencode")
+	w.Header().Set("Allow-Control-Allow-Methods", "POST")
+
+	//Return all movies
+	var movie model.Netflix
+	err := json.NewDecoder(r.Body).Decode(&movie)
+	checkNilError(err)
+
+	// Add to Database
+	insertOneMovie(movie)
+
+	// Response 
+	json.NewEncoder(w).Encode(movie)
+}
+
 func checkNilError(err error) {
 	if err != nil {
 		log.Fatal(err)
