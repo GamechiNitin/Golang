@@ -8,7 +8,10 @@ import (
 )
 
 // Package sync : WaitGroup method
-var wg sync.WaitGroup // Step 1 : Declare variable
+var wg sync.WaitGroup // Step 1 : Declare wait pointer variable
+var mutex sync.Mutex  // Step 1 : Declare Mutex pointer variable
+
+var signals = []string{"test"}
 
 func main() {
 	fmt.Println("Go routines")
@@ -33,6 +36,8 @@ func main() {
 	}
 
 	wg.Wait() // Step 4 : End of main method
+	fmt.Println(signals)
+
 }
 
 func getStatusCode(endpoint string) {
@@ -41,6 +46,12 @@ func getStatusCode(endpoint string) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
+		// ::::::::::: Mutex :::::::::::::::
+		mutex.Lock()
+		signals = append(signals, endpoint)
+		mutex.Unlock()
+		// ::::::::::: Mutex :::::::::::::::
+		
 		fmt.Printf("%d status code for %s\n", res.StatusCode, endpoint)
 	}
 }
