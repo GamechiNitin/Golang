@@ -10,10 +10,11 @@ func main() {
 
 	var score = []int{0}
 	wg := &sync.WaitGroup{}
-	mutex := &sync.Mutex{}
+	mutex := &sync.RWMutex{}
+	// rwMutex := &sync.RWMutex{}
 
-	wg.Add(3) // Add Goroutines one by one or All Together
-	go func(wg *sync.WaitGroup, m *sync.Mutex) {
+	wg.Add(4) // Add Goroutines one by one or All Together
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
 		fmt.Println("One R")
 		mutex.Lock()
 		score = append(score, 1)
@@ -22,7 +23,7 @@ func main() {
 	}(wg, mutex)
 
 	// wg.Add(1)
-	go func(wg *sync.WaitGroup, m *sync.Mutex) {
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
 		fmt.Println("Two R")
 		mutex.Lock()
 		score = append(score, 2)
@@ -30,11 +31,18 @@ func main() {
 		wg.Done()
 	}(wg, mutex)
 
-	go func(wg *sync.WaitGroup, m *sync.Mutex) {
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
 		fmt.Println("Three R")
 		mutex.Lock()
 		score = append(score, 3)
 		mutex.Unlock()
+		wg.Done()
+	}(wg, mutex)
+
+	go func(wg *sync.WaitGroup, m *sync.RWMutex) {
+		mutex.RLock()
+		fmt.Println("Score Read Mutex", score)
+		mutex.RUnlock()
 		wg.Done()
 	}(wg, mutex)
 
